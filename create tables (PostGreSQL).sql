@@ -7,7 +7,7 @@ CREATE TABLE archimatediagrammodel (
 	folder VARCHAR (255),
 	name VARCHAR (255) NOT NULL,
 	type VARCHAR (50),
-	viewpoint INTEGER,
+	viewpoint VARCHAR(255),
 	
 	CONSTRAINT pk_archimatediagrammodel PRIMARY KEY (id, model, version)
 );
@@ -204,10 +204,6 @@ CREATE TABLE diagrammodelreference (
 	parent VARCHAR (255) NOT NULL,
 	targetconnections VARCHAR (255),
 	textalignment INTEGER,
-	x integer,
-    y integer,
-    width integer,
-    height integer,
 	rank INTEGER,
 	indent INTEGER,
 	
