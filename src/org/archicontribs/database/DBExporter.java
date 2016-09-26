@@ -46,7 +46,9 @@ import com.archimatetool.model.IFolder;
 import com.archimatetool.model.IIdentifier;
 import com.archimatetool.model.INameable;
 import com.archimatetool.model.IProperty;
-import com.archimatetool.model.IRelationship;
+import com.archimatetool.model.IArchimateRelationship;
+
+
 import com.archimatetool.model.ISketchModel;
 import com.archimatetool.model.ISketchModelActor;
 import com.archimatetool.model.ISketchModelSticky;
@@ -57,7 +59,7 @@ import com.archimatetool.model.ISketchModelSticky;
  * @author Herve Jouin
  */
 /**
- * @author Hervé
+ * @author Hervï¿½
  *
  */
 public class DBExporter implements IModelExporter {
@@ -419,7 +421,7 @@ public class DBExporter implements IModelExporter {
 									break;
 	
 								default:
-									// here, the class is too detailed (Node, Artefact, BisinessActor, etc ...)
+									// here, the class is too detailed (Node, Artefact, BusinessActor, etc ...)
 									// so we use "instanceof" to determine if they are an element or a relationship, which is sufficient to export them
 									if ( objectToExport instanceof IArchimateElement ) {
 										IArchimateElement archimateElement = (IArchimateElement)objectToExport;
@@ -448,8 +450,8 @@ public class DBExporter implements IModelExporter {
 										dbTabItem.setCountElements(++countElements);
 										dbTabItem.setProgressBar(++countTotal);
 										exportObjectProperties(archimateElement,archimateElement.getProperties());
-									} else if ( objectToExport instanceof IRelationship ) {
-										IRelationship relationship = (IRelationship)objectToExport;
+									} else if ( objectToExport instanceof IArchimateRelationship ) {
+										IArchimateRelationship relationship = (IArchimateRelationship)objectToExport;
 										DBPlugin.debug(DebugLevel.Variable, "Exporting "+objectToExport.eClass().getName()+" id="+id+" name="+name);
 										if ( dbSelectModel.getDbLanguage().equals("SQL") ) {
 											DBPlugin.insert(db, "INSERT INTO relationship (id, model, version, name, source, target, type, documentation, folder)",
@@ -897,7 +899,7 @@ public class DBExporter implements IModelExporter {
 		switch ( diagramModelConnection.eClass().getName() ) {
 		case "DiagramModelArchimateConnection" :
 			isLocked = false;
-			relationshipId = DBPlugin.getId(((IDiagramModelArchimateConnection)diagramModelConnection).getRelationship().getId());
+			relationshipId = DBPlugin.getId(((IDiagramModelArchimateConnection)diagramModelConnection).getArchimateRelationship().getId());
 			
 			dbTabItem.setCountDiagramModelConnections(++countDiagramModelArchimateConnections);
 			dbTabItem.setProgressBar(++countTotal);

@@ -34,7 +34,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.archimatetool.model.IDiagramModelConnection;
+/*
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+*/
+
+import java.util.Base64;
 
 /**
  * Database Model Importer / Exporter
@@ -70,12 +74,14 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
  *                          Add exceptions to reduce the cases when the model is not complete
  *                          Bug resolution : add bounds export/import for DiagramModelReference
  *                          The Filter when selecting a model is (temporarily) deactivated for Neo4J databases
+ *                          
+ * v0-11-ca					Some changes to make compatible with Archi4 Alpha code
  */
 public class DBPlugin extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.archicontribs.database";
 	public static DBPlugin INSTANCE;
 	
-	public static final String pluginVersion = "0.10";
+	public static final String pluginVersion = "0.11-ca";
 	public static final String pluginName = "DatabasePlugin";
 	public static final String pluginTitle = "Database import/export plugin v" + pluginVersion;
 	public static final String Separator = "-";
@@ -307,7 +313,7 @@ public class DBPlugin extends AbstractUIPlugin {
 			    		replaceFirst(debugRequest, "?", "<image as stream>");
 			    	} catch (Exception err) {
 			    		replaceFirst(debugRequest, "?", "<image as String>");
-			    		pstmt.setString(rank+1, Base64.encode((byte[])parameters[rank]));
+			    		pstmt.setString(rank+1, Base64.getEncoder().encodeToString((byte[])parameters[rank]));
 			    	}
 				}
 				else {

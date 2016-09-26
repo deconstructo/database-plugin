@@ -42,7 +42,7 @@ import com.archimatetool.model.ILockable;
 import com.archimatetool.model.INameable;
 import com.archimatetool.model.IProperties;
 import com.archimatetool.model.IProperty;
-import com.archimatetool.model.IRelationship;
+import com.archimatetool.model.IArchimateRelationship;
 import com.archimatetool.model.ISketchModel;
 import com.archimatetool.model.ISketchModelSticky;
 import com.archimatetool.model.ITextAlignment;
@@ -113,38 +113,38 @@ public class DBObject {
 	}
 	public String getSourceId() {
 		try {
-			return DBPlugin.getId(((IRelationship)object).getSource().getId());
+			return DBPlugin.getId(((IArchimateRelationship)object).getSource().getId());
 		} catch (ClassCastException e) {}
 		return DBPlugin.getId(((IDiagramModelConnection)object).getSource().getId());
 	}
 	public void setSource(String _source) {
 		try {
-			((IRelationship)object).setSource((IArchimateElement)dbModel.searchEObjectById(DBPlugin.generateId(_source, getProjectId(), getVersion())));
+			((IArchimateRelationship)object).setSource((IArchimateElement)dbModel.searchEObjectById(DBPlugin.generateId(_source, getProjectId(), getVersion())));
 			return;
 		} catch (ClassCastException e) {}
 		((IDiagramModelConnection)object).setSource((IDiagramModelObject)dbModel.searchEObjectById(DBPlugin.generateId(_source, getProjectId(), getVersion())));
 	}
 	public String getTargetId() {
 		try {
-			return (new DBObject(dbModel, ((IRelationship)object).getTarget())).getId();
+			return (new DBObject(dbModel, ((IArchimateRelationship)object).getTarget())).getId();
 		} catch (ClassCastException e) {}
 		return (new DBObject(dbModel, ((IDiagramModelConnection)object).getTarget())).getId();
 	}
 	public void setTarget(String _target) {
 		try {
-			((IRelationship)object).setTarget((IArchimateElement)dbModel.searchEObjectById(DBPlugin.generateId(_target, getProjectId(), getVersion())));
+			((IArchimateRelationship)object).setTarget((IArchimateElement)dbModel.searchEObjectById(DBPlugin.generateId(_target, getProjectId(), getVersion())));
 			return;
 		} catch (ClassCastException e) {}
 		((IDiagramModelConnection)object).setTarget((IDiagramModelObject)dbModel.searchEObjectById(DBPlugin.generateId(_target, getProjectId(), getVersion())));
 	}
 	public String getRelationshipId() {
 		try {
-			return (new DBObject(dbModel, ((IDiagramModelArchimateConnection)object).getRelationship())).getId();
+			return (new DBObject(dbModel, ((IDiagramModelArchimateConnection)object).getArchimateRelationship())).getId();
 		} catch (ClassCastException e) {}
 		return null;
 	}
 	public void setRelationship(String _relationship) {
-		((IDiagramModelArchimateConnection)object).setRelationship((IRelationship)dbModel.searchEObjectById(DBPlugin.generateId(_relationship, getProjectId(), getVersion())));
+		((IDiagramModelArchimateConnection)object).setArchimateRelationship((IArchimateRelationship)dbModel.searchEObjectById(DBPlugin.generateId(_relationship, getProjectId(), getVersion())));
 	}
 	public int getBackground() {
 		return ((ISketchModel)object).getBackground();
@@ -364,10 +364,10 @@ public class DBObject {
 		//} catch (ClassCastException e) {}
 		//((ICanvasModel)object).setConnectionRouterType(_connectionRouterType);
 	}
-	public int getViewpoint() {
+	public String getViewpoint() {
 		return ((IArchimateDiagramModel)object).getViewpoint();
 	}
-	public void setViewpoint(int _viewpoint) {
+	public void setViewpoint(String _viewpoint) {
 		((IArchimateDiagramModel)object).setViewpoint(_viewpoint);
 	}
 	public int getBorderType() {
@@ -456,7 +456,7 @@ public class DBObject {
 			}
 		} else {
 			//TODO: should exist !!! create it
-			DBPlugin.debug("      setFolder : unknown folder id " + _id);;
+			//DBPlugin.debug("      setFolder : unknown folder id " + _id);;
 		}
 	}
 	

@@ -38,7 +38,7 @@ import com.archimatetool.model.IIdentifier;
 import com.archimatetool.model.IMetadata;
 import com.archimatetool.model.INameable;
 import com.archimatetool.model.IProperty;
-import com.archimatetool.model.IRelationship;
+import com.archimatetool.model.IArchimateRelationship;
 import com.archimatetool.model.ISketchModel;
 import com.archimatetool.model.ISketchModelSticky;
 
@@ -46,9 +46,9 @@ import com.archimatetool.model.ISketchModelSticky;
 /**
  * The DBModel class is a proxy to the IArchimateModel class in standalone mode, and to the IFolder class in shared mode.
  * <br>
- * It allows to transparentely access methods of the right object  
+ * It allows transparent access methods of the right object  
  * 
- * @author Hervé
+ * @author Hervï¿½
  *
  */
 public class DBModel {
@@ -471,8 +471,8 @@ public class DBModel {
 	public IFolder getDefaultFolderForElement(EObject _eObject) {
 		//WARNING: DERIVED folder is not return by getDefaultFolderForElement method
 		if ( projectFolder == null )
-			return model.getDefaultFolderForElement(_eObject);
-		for ( IFolder f: model.getDefaultFolderForElement(_eObject).getFolders() ) {
+			return model.getDefaultFolderForObject(_eObject);
+		for ( IFolder f: model.getDefaultFolderForObject(_eObject).getFolders() ) {
 			if ( DBPlugin.getProjectId(f.getId()).equals(DBPlugin.getProjectId(((IIdentifier)_eObject).getId())) ) {
 				return f;
 			}
@@ -594,7 +594,7 @@ public class DBModel {
 			// so we use "instanceof" to distinguish elements from relationships
 			if ( _obj instanceof IArchimateElement ) {
 				allElements.put(((IIdentifier)_obj).getId(), _obj);
-			} else if ( _obj instanceof IRelationship ) {
+			} else if ( _obj instanceof IArchimateRelationship ) {
 				allRelationships.put(((IIdentifier)_obj).getId(), _obj);						
 			} else {
 				//we shouldn't be there but just in case
@@ -696,7 +696,7 @@ public class DBModel {
 			// so we use "instanceof" to distinguish elements from relationships
 			if ( _obj instanceof IArchimateElement ) {
 				++nbElements;
-			} else if ( _obj instanceof IRelationship ) {
+			} else if ( _obj instanceof IArchimateRelationship ) {
 				++nbRelationships;						
 			} else {
 				//we shouldn't be there but just in case

@@ -34,6 +34,7 @@ import com.archimatetool.model.IArchimateElement;
 import com.archimatetool.model.IArchimateFactory;
 import com.archimatetool.model.IArchimateModel;
 import com.archimatetool.model.IArchimatePackage;
+import com.archimatetool.model.IArchimateRelationship;
 import com.archimatetool.model.IDiagramModelArchimateConnection;
 import com.archimatetool.model.IDiagramModelBendpoint;
 import com.archimatetool.model.IDiagramModelConnection;
@@ -46,28 +47,31 @@ import com.archimatetool.model.IFolder;
 import com.archimatetool.model.IIdentifier;
 import com.archimatetool.model.IProperties;
 import com.archimatetool.model.IProperty;
-import com.archimatetool.model.IRelationship;
 import com.archimatetool.model.ISketchModel;
 import com.archimatetool.model.ISketchModelActor;
 import com.archimatetool.model.ISketchModelSticky;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+/** This will work for Java 8 and onward 
+ * 
+ */
+import java.util.Base64;
 
 //
-//vérifier si des vues ou des relations d'autres modèles référencent des objets disparus
-//pour ça, utiliser la transaction :
-//  1 - créer transaction
-//  2 - sauvegarder le modèle
-//  3 - demander à l'utilisateur
+//vï¿½rifier si des vues ou des relations d'autres modï¿½les rï¿½fï¿½rencent des objets disparus
+//pour ï¿½a, utiliser la transaction :
+//  1 - crï¿½er transaction
+//  2 - sauvegarder le modï¿½le
+//  3 - demander ï¿½ l'utilisateur
 //				soit on modifie les autres projets pour que les vues et les relations pointent vers la nouvelle version des objets
 //				soit on ne les modifie pas
-//				soit on utilise une propriété pour le spécifier, objet par objet
-//  4 - si des modèles sont modifiés par cette opération, alors il faut auto-générer une nouvelle version
+//				soit on utilise une propriï¿½tï¿½ pour le spï¿½cifier, objet par objet
+//  4 - si des modï¿½les sont modifiï¿½s par cette opï¿½ration, alors il faut auto-gï¿½nï¿½rer une nouvelle version
 //
 
 /**
  * Import from Database
  * 
- * @author Hervé JOUIN
+ * @author Hervï¿½ JOUIN
  */
 public class DBImporter implements IModelImporter, ISelectedModelImporter {
 	private Connection db;
@@ -164,11 +168,11 @@ public class DBImporter implements IModelImporter, ISelectedModelImporter {
 			dbModel = null;
 
 			//TODO
-			// Si on référence des objets d'autres modèles (dans une vue ou dans des relations)
-			// alors, proposer à l'utilisateur
-			//		soit charger les autres projets (en récursifs car ils peuvent dépendre les uns des autres)
-			//		soit charger uniquement les objets dépendants dans un dossier spécial (mais attention à la sauvegarde)
-			//		soit ne pas les charger mais ils devront être reconduits lors de la sauvegarde
+			// Si on rï¿½fï¿½rence des objets d'autres modï¿½les (dans une vue ou dans des relations)
+			// alors, proposer ï¿½ l'utilisateur
+			//		soit charger les autres projets (en rï¿½cursifs car ils peuvent dï¿½pendre les uns des autres)
+			//		soit charger uniquement les objets dï¿½pendants dans un dossier spï¿½cial (mais attention ï¿½ la sauvegarde)
+			//		soit ne pas les charger mais ils devront ï¿½tre reconduits lors de la sauvegarde
 			//
 
 			for ( HashMap<String, String> x: selectedModels.values() ) {
@@ -412,7 +416,7 @@ public class DBImporter implements IModelImporter, ISelectedModelImporter {
 		
 		while(result.next()) {
 			DBPlugin.debug(DebugLevel.Variable, "Importing "+result.getString("type")+" id="+result.getString("id")+" source="+result.getString("source")+" target="+result.getString("target"));
-			IRelationship relationship = (IRelationship)IArchimateFactory.eINSTANCE.create((EClass)IArchimatePackage.eINSTANCE.getEClassifier(result.getString("type")));
+			IArchimateRelationship relationship = (IArchimateRelationship)IArchimateFactory.eINSTANCE.create((EClass)IArchimatePackage.eINSTANCE.getEClassifier(result.getString("type")));
 			dbTabItem.setCountRelationships(++countRelationships);
 			dbTabItem.setProgressBar(++countTotal);
 			
@@ -456,7 +460,7 @@ public class DBImporter implements IModelImporter, ISelectedModelImporter {
 			archimatediagramModel.setName(result.getString("name"));
 			archimatediagramModel.setDocumentation(result.getString("documentation"));
 			archimatediagramModel.setConnectionRouterType(result.getInt("connectionroutertype"));
-			archimatediagramModel.setViewpoint(result.getInt("viewpoint"));
+			archimatediagramModel.setViewpoint(result.getString("viewpoint"));
 			
 			_dbModel.setFolder(result.getString("folder"), archimatediagramModel);
 
@@ -639,10 +643,10 @@ public class DBImporter implements IModelImporter, ISelectedModelImporter {
 			case "DiagramModelArchimateConnection" :
 				IDiagramModelArchimateConnection diagramModelArchimateConnection = (IDiagramModelArchimateConnection)diagramModelConnection;
 
-				IRelationship relation = (IRelationship)dbModel.searchEObjectById(DBPlugin.generateId(result.getString("relationship"), _dbModel.getProjectId(),_dbModel.getVersion()));
+				IArchimateRelationship relation = (IArchimateRelationship)dbModel.searchEObjectById(DBPlugin.generateId(result.getString("relationship"), _dbModel.getProjectId(),_dbModel.getVersion()));
 				if ( relation == null )
 					throw new Exception("importConnections() : cannot find relationship "+DBPlugin.generateId(result.getString("relationship"), _dbModel.getProjectId(),_dbModel.getVersion()));
-				diagramModelArchimateConnection.setRelationship(relation);
+				diagramModelArchimateConnection.setArchimateRelationship(relation);
 				
 				_dbModel.indexEObject(diagramModelArchimateConnection);
 				
@@ -1189,8 +1193,13 @@ public class DBImporter implements IModelImporter, ISelectedModelImporter {
 					if ( dbSelectModel.getDbLanguage().equals("SQL") ) {
 						imagePath = archiveMgr.addByteContentEntry(path, result.getBytes("image"));
 					} else {
+						/*
 						imagePath = archiveMgr.addByteContentEntry(path, Base64.decode(result.getString("image")));
+						*/
+						imagePath = archiveMgr.addByteContentEntry(path, Base64.getDecoder().decode(result.getString("image")));
 					}
+					
+				
 					if ( imagePath.equals(path) ) {
 						DBPlugin.debug(DebugLevel.Variable, "... image imported");
 					} else {
