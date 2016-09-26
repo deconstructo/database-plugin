@@ -9,7 +9,7 @@ CREATE TABLE archimatediagrammodel (
 	folder VARCHAR (255),
 	name VARCHAR (255) NOT NULL,
 	type VARCHAR (50),
-	viewpoint INTEGER,
+	viewpoint VARCHAR(50),
 	
 	CONSTRAINT pk_archimatediagrammodel PRIMARY KEY (id, model, version)
 );
